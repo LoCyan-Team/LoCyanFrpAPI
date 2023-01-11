@@ -1,7 +1,7 @@
-# LoCyan Api 1.0
+# LoCyan API 1.0
 
 ## 介绍
-LoCyan API是由LoCyan Team的Daiyangcheng主持编写的关于LoCyan旗下Freenat免费内网穿透的API接口
+LoCyan API 是由 LoCyanTeam 的 Daiyangcheng 主持编写的关于 LoCyan 旗下 LoCyanFrp 免费内网穿透的 API 接口
 
 该接口提供了
 1. 实名认证模板
@@ -13,8 +13,8 @@ LoCyan API是由LoCyan Team的Daiyangcheng主持编写的关于LoCyan旗下Freen
 7. 获取站内用户3分钟内的全部流量
 
 ## 特色
-1. 使用ThinkPHP6框架，扩展性强
+1. 使用 ThinkPHP6 框架，扩展性强
 2. 永更
 
 ## 缺点
-1. 啊？？我不知道啊
+啊？？我不知道啊
