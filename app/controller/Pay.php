@@ -34,12 +34,7 @@ class Pay extends BaseController
 
     public function sign($money ,$name ,$type ,$tradeid)
     {
-        //echo("money={$money}&name={$name}{$not}ify_url=127.0.0.1&out_trade_no={$tradeid}&pid=1001&return_url=127.0.0.1&sitename=test&type={$type}CFI4720P");
-<<<<<<< HEAD
         $str = 'money=' . $money . '&name=' . $name . '&notify_url=https://api.locyanfrp.cn/Pay/notify&out_trade_no=' . $tradeid . '&pid=1000&return_url=https://api.locyanfrp.cn/Pay/PayReturn&sitename=test&type=' . $type . '';
-=======
-        $str = 'money=' . $money . '&name=' . $name . '&notify_url=https://api.locyanfrp.cn/Pay/notify&out_trade_no=' . $tradeid . '&pid=1000&return_url=https://api.locyanfrp.cn/Pay/PayReturn&sitename=test&type=' . $type . 'xxxxxxxxxxxxxxxxxxxxx';
->>>>>>> 8ca5007b9f4f577222552c4c5fab57ad06dc886f
         return md5($str);
     }
     
