@@ -7,7 +7,7 @@ class Index extends BaseController
 {
     public function index()
     {
-        return 'api目前状态良好';
+        return 'LoCyanFrpAPI 当前状态良好！';
     }
 
     public function hello($name = 'ThinkPHP6')

@@ -54,7 +54,9 @@ class Account
             "status"            => 0,
             "username"          => $user,
             "email"             => $rs["email"],
-            "token"             => $rs2["token"]
+            "token"             => $rs2["token"],
+            "traffic"           => $rs["traffic"],
+            "avator"            => 'https://cravatar.cn/avatar/' . md5($rs["email"])
             ];
         return json($data);
         }
@@ -67,7 +69,7 @@ class Account
             }
             return $rs["username"];
         }
-        $token = Request::post("token");
+        $token = Request::get("token");
         $rs = Db::table("logintoken")->where("token",$token)->find();
         if ($rs == null){
             $data = [
@@ -83,57 +85,64 @@ class Account
             ];
         return json($data);
     }
+    public function GetUserNameByFrpToken($token){
+        $rs = Db::table("tokens")->where("token",$token)->find();
+        
+        if($rs == null){
+            $data = [
+                "status"        => -1,
+                "message"       => "该TOKEN不存在！"
+                ];
+            return json($data);
+        } else {
+            $data = [
+                "status"        => 0,
+                "message"       => "成功",
+                "username"      => $rs["username"]
+                ];
+            return json($data);
+        }
+    }
     public function realnamecheck($idcard ,$name){
         if($idcard == "" || $name == ""){
             return '我不知道你是怎么搞到实名认证地址的，但我希望你做个好人不要瞎搞，好嘛';
         }
-        // 云市场分配的密钥Id
-        $secretId = '';
-        // 云市场分配的密钥Key
-        $secretKey = '';
-        $source = 'market';
+        // 上游分配的ID
+<<<<<<< HEAD
+        $appid = '';
+        $appkey = '';
+=======
+        // 这边使用的是华际的API
+        $appid = 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx';
+        $appkey = 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx';
+>>>>>>> 8ca5007b9f4f577222552c4c5fab57ad06dc886f
         
         // 签名
-        $datetime = gmdate('D, d M Y H:i:s T');
-        $signStr = sprintf("x-date: %s\nx-source: %s", $datetime, $source);
-        $sign = base64_encode(hash_hmac('sha1', $signStr, $secretKey, true));
-        $auth = sprintf('hmac id="%s", algorithm="hmac-sha1", headers="x-date x-source", signature="%s"', $secretId, $sign);
+        $millisecond = '000';
+        $timestamp = time().$millisecond;
+        $signStr = $appid.$timestamp.$appkey;
+        $sign = md5($signStr);
         
         // 请求方法
         $method = 'POST';
-        // 请求头
-        $headers = array(
-            'X-Source' => $source,
-            'X-Date' => $datetime,
-            'Authorization' => $auth,
-            
-        );
-        // 查询参数
-        $queryParams = array (
         
-        );
         // body参数（POST方法下）
         $bodyParams = array (
+            'appid' => $appid,
+            'timestamp' => $timestamp,
+            'sign' => $sign,
             'idcard' => $idcard,
-            'name' => $name,
+            'name' => $name
         );
         // url参数拼接
-        $url = 'https://service-isr6xhvr-1308811306.sh.apigw.tencentcs.com/release/id_name/check';
-        if (count($queryParams) > 0) {
-            $url .= '?' . http_build_query($queryParams);
-        }
-        
+        $url = 'https://api.huajidata.com/id_name/check';
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, $url);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_TIMEOUT, 60);
         curl_setopt($ch, CURLOPT_CUSTOMREQUEST, $method);
-        curl_setopt($ch, CURLOPT_HTTPHEADER, array_map(function ($v, $k) {
-            return $k . ': ' . $v;
-        }, array_values($headers), array_keys($headers)));
-        if (in_array($method, array('POST', 'PUT', 'PATCH'), true)) {
-            curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($bodyParams));
-        }
+        curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($bodyParams));
+        
         
         $data = curl_exec($ch);
         if (curl_errno($ch)) {
@@ -149,34 +158,73 @@ class Account
         $idcard = Request::post("idcard");
         $key = Request::post("key");
         
-        if($key !== ""){
-            return '密钥错误，请仔细核对您的密钥！';
+        if(!isset($idcard) || !isset($name) || !isset($username) || !isset($key) || $idcard == "" || $name == "" || $username == "" || $key == ""){
+            $data = [
+                "status"        => false,
+                "message"       => "那个，你可以吧信息填完整吗？"
+                ];
+            return json($data);
         }
         
-        if(!isset($idcard) || !isset($name)){
-            return '那个，你可以吧信息填完整吗？';
+<<<<<<< HEAD
+        if($key !== "LocyanRealname"){
+=======
+        if($key !== "xxxxxxxxxxxxx"){
+>>>>>>> 8ca5007b9f4f577222552c4c5fab57ad06dc886f
+            $data = [
+                "status"        => false,
+                "message"       => "密钥错误，请仔细核对您的密钥！"
+                ];
+            return json($data);
         }
+        
         $rs = $this->realnamecheck($idcard, $name);
-        $rs_decoded = json_decode($rs,true);
-        if($rs_decoded["msg"] !== ""){
-            return $rs_decoded["msg"];
+        $rs_decoded = json_decode($rs, true);
+        // 如果结果不是200，则抛出错误信息
+        if ($rs_decoded["code"] != 200) {
+            $data = [
+                "status"        => false,
+                "message"       => $rs_decoded["msg"]
+                ];
+            return json($data);
         }
-        $rs2 = json_encode($rs_decoded["data"]["result"]);
+        // 若data.result 为1则匹配，2则不匹配，3则无信息
+        $rs2 = $rs_decoded["data"]["result"];
         if($rs2 == "1"){
-            $this->realnamescs($username,$name,$idcard);
-            return '恭喜您，成功完成实名认证，您可以继续接下来的操作！';
+            $this->realnamescs($username, $name, $idcard);
+            $data = [
+                "status"        => true,
+                "message"       => "恭喜您，成功完成实名认证，您可以继续接下来的操作！"
+                ];
+            return json($data);
         } else {
-            return '实名认证失败，请检查您的设置！';
+            $data = [
+                "status"        => false,
+                "message"       => "实名认证失败，请检查您的设置！"
+                ];
+            return json($data);
         }
     }
     public function realnamescs($username, $name, $idcard){
+<<<<<<< HEAD
+        $pub_key = "";
+=======
+        $pub_key = "你的公钥";
+>>>>>>> 8ca5007b9f4f577222552c4c5fab57ad06dc886f
+        $key = openssl_pkey_get_public($pub_key);
+        openssl_public_encrypt($idcard, $encrypted, $key);
+        $encrypted = base64_encode($encrypted);
         $data = [
             "id"            => null,
             "username"      => $username,
             "name"          => $name,
-            "idcard"        => $idcard
+            "idcard"        => $encrypted
             ];
         Db::table("realname")->insert($data);
+        $update_data = [
+            "group"         => "all_certified"
+            ];
+        Db::table("users")->where("username", $username)->update($update_data);
         return 0;
     }
     public function GetRealnameStatus(){
@@ -186,9 +234,45 @@ class Account
         }
         $rs = Db::table("realname")->where("username",$username)->find();
         if ($rs == null){
-            return -1;
+            $data = [
+                "status"        => false,
+                "message"       => "未实名"
+                ];
+            return json($data);
         } else {
-            return 0;
+            $data = [
+                "status"        => true,
+                "message"       => "已实名"
+                ];
+            return json($data);
         }
+    }
+    
+    // 将身份证进行RSA加密
+<<<<<<< HEAD
+=======
+    // 这一段代码适用于浏览器执行，用于批量加密没有加密过的用户身份数据
+    // 即将所有明文存储的数据进行RSA加密后存储
+    // 公钥和私钥对请自行生成，并做好保密工作！
+>>>>>>> 8ca5007b9f4f577222552c4c5fab57ad06dc886f
+    public function updaterealname(){
+        $rs = Db::table("realname")->select()->toArray();
+        foreach ($rs as $r){
+            if (substr($r["idcard"], -1) == "X" || substr($r["idcard"], -1) == "x") {
+<<<<<<< HEAD
+                $pub_key = "";
+=======
+                $pub_key = "你的公钥";
+>>>>>>> 8ca5007b9f4f577222552c4c5fab57ad06dc886f
+                $key = openssl_pkey_get_public($pub_key);
+                openssl_public_encrypt($r["idcard"], $encrypted, $key);
+                $encrypted = base64_encode($encrypted);
+                $data = [
+                    "idcard"        => $encrypted
+                    ];
+                Db::table("realname")->where("id", $r["id"])->update($data);
+            }
+        }
+        return "转换结束";
     }
 }
