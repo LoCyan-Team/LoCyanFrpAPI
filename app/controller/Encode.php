@@ -26,11 +26,7 @@ class Encode
     public function RSAEncode()
     {
         $data = Request::get("data");
-<<<<<<< HEAD
-        $pub_key = "";
-=======
         $pub_key = "你的公钥";
->>>>>>> 8ca5007b9f4f577222552c4c5fab57ad06dc886f
     $key = openssl_pkey_get_public($pub_key);
     if (!$key){
         return "公钥不可用";
@@ -43,11 +39,7 @@ class Encode
     {
         $data = Request::get("data");
         $data = str_replace(' ','+', $data);
-<<<<<<< HEAD
-        $pri_key = "";
-=======
         $pri_key = "你的私钥";
->>>>>>> 8ca5007b9f4f577222552c4c5fab57ad06dc886f
         $key = openssl_pkey_get_private($pri_key);
         if (!$key) {
             return '私钥不可用';
