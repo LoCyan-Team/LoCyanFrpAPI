@@ -108,14 +108,11 @@ class Account
             return '我不知道你是怎么搞到实名认证地址的，但我希望你做个好人不要瞎搞，好嘛';
         }
         // 上游分配的ID
-<<<<<<< HEAD
         $appid = '';
         $appkey = '';
-=======
         // 这边使用的是华际的API
         $appid = 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx';
         $appkey = 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx';
->>>>>>> 8ca5007b9f4f577222552c4c5fab57ad06dc886f
         
         // 签名
         $millisecond = '000';
@@ -165,12 +162,7 @@ class Account
                 ];
             return json($data);
         }
-        
-<<<<<<< HEAD
-        if($key !== "LocyanRealname"){
-=======
         if($key !== "xxxxxxxxxxxxx"){
->>>>>>> 8ca5007b9f4f577222552c4c5fab57ad06dc886f
             $data = [
                 "status"        => false,
                 "message"       => "密钥错误，请仔细核对您的密钥！"
@@ -206,11 +198,7 @@ class Account
         }
     }
     public function realnamescs($username, $name, $idcard){
-<<<<<<< HEAD
-        $pub_key = "";
-=======
         $pub_key = "你的公钥";
->>>>>>> 8ca5007b9f4f577222552c4c5fab57ad06dc886f
         $key = openssl_pkey_get_public($pub_key);
         openssl_public_encrypt($idcard, $encrypted, $key);
         $encrypted = base64_encode($encrypted);
@@ -249,21 +237,14 @@ class Account
     }
     
     // 将身份证进行RSA加密
-<<<<<<< HEAD
-=======
     // 这一段代码适用于浏览器执行，用于批量加密没有加密过的用户身份数据
     // 即将所有明文存储的数据进行RSA加密后存储
     // 公钥和私钥对请自行生成，并做好保密工作！
->>>>>>> 8ca5007b9f4f577222552c4c5fab57ad06dc886f
     public function updaterealname(){
         $rs = Db::table("realname")->select()->toArray();
         foreach ($rs as $r){
             if (substr($r["idcard"], -1) == "X" || substr($r["idcard"], -1) == "x") {
-<<<<<<< HEAD
-                $pub_key = "";
-=======
                 $pub_key = "你的公钥";
->>>>>>> 8ca5007b9f4f577222552c4c5fab57ad06dc886f
                 $key = openssl_pkey_get_public($pub_key);
                 openssl_public_encrypt($r["idcard"], $encrypted, $key);
                 $encrypted = base64_encode($encrypted);
