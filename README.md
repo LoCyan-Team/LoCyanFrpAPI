@@ -1,3 +1,7 @@
+# Note: 2023-06-28 by XiaMoHuaHuo_CN
+
+此仓库已过时。
+
 ThinkPHP 6.0
 ===============
 
